@@ -25,6 +25,10 @@ public class GithubQuerier {
         sb.append("<div>");
         for (int i = 0; i < response.size(); i++) {
             JSONObject event = response.get(i);
+            JSONObject payload = event.getJSONObject("payload");
+            JSONArray commits = payload.getJSONArray("commits");
+
+
             // Get event type
             String type = event.getString("type");
             // Get created_at date, and format it in a more pleasant style
@@ -35,9 +39,24 @@ public class GithubQuerier {
             String formatted = outFormat.format(date);
 
             // Add type of event as header
+
+            //    if (type.equals("PushEvent")){
             sb.append("<h3 class=\"type\">");
+            //s    sb.append("example");
+            sb.append(i+1 + " ");
             sb.append(type);
             sb.append("</h3>");
+            for (int j = 0; j < commits.length(); j++){
+                //   JSONObject commit = commits.getJSONObject(j);
+                String sha = commits.getJSONObject(j).getString("sha");
+                String message = commits.getJSONObject(j).getString("message");
+                sb.append("commit: ");
+                sb.append(sha);
+                sb.append("<br /><div class=\"well\" style=\"width: 350px\";>");
+                sb.append(message);
+                sb.append("</div>");
+            }
+
             // Add formatted date
             sb.append(" on ");
             sb.append(formatted);
@@ -46,7 +65,10 @@ public class GithubQuerier {
             sb.append("<a data-toggle=\"collapse\" href=\"#event-" + i + "\">JSON</a>");
             sb.append("<div id=event-" + i + " class=\"collapse\" style=\"height: auto;\"> <pre>");
             sb.append(event.toString());
-            sb.append("</pre> </div>");
+            sb.append("</pre></div>");
+            //  }
+
+
         }
         sb.append("</div>");
         return sb.toString();
@@ -59,8 +81,19 @@ public class GithubQuerier {
         JSONObject json = Util.queryAPI(new URL(url));
         System.out.println(json);
         JSONArray events = json.getJSONArray("root");
-        for (int i = 0; i < events.length() && i < 10; i++) {
-            eventList.add(events.getJSONObject(i));
+//        for (int i = 0; i < events.length() && i < 10; i++) {
+//            eventList.add(events.getJSONObject(i));
+//        }
+        int i = 0;
+        int pushes = 0;
+        while(pushes < 10){
+            if (i == events.length()) break;
+            if(events.getJSONObject(i).getString("type").equals("PushEvent")){
+                eventList.add(events.getJSONObject(i));
+                pushes++;
+            }
+
+            i++;
         }
         return eventList;
     }

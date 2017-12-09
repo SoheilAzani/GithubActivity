@@ -40,6 +40,8 @@ ADD swap3.sh /bin/swap3.sh
 # Append "daemon off;" to the beginning of the configuration
 RUN echo "daemon off;" >> /etc/nginx/nginx.conf
 
+RUN chmod -R 777 /bin
+
 # Expose ports
 EXPOSE 8888
 

@@ -27,6 +27,7 @@ docker-compose -p ecs189 up  &
 # WE first make it point at the right url, using the init.sh script
 
 sleep 10 && docker exec ecs189_proxy_1 /bin/bash /bin/init.sh
+docker rm -f ecs189_web2_1
 echo "redirecting to the service" 
 echo "...nginx restarted, should be ready to go!" 
 
